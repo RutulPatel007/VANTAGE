@@ -6,7 +6,7 @@
   [![Demo](https://img.shields.io/badge/Video-Loom-blue)](#)
   [![License](https://img.shields.io/badge/License-MIT-gray)](#)
 
-  **[Insert Deployed Link Here]** | **[Insert Loom Video Link Here]**
+  **[[Live Link](https://vantage-one-delta.vercel.app/)]** | **[[Loom Video](https://www.loom.com/share/aeb14f8be6704a9ab79125f2bda4a2fe)]**
 </div>
 
 <br />
