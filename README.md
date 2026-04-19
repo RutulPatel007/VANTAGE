@@ -14,6 +14,7 @@
 VANTAGE is a complete operating system built for the venture ecosystem. Unlike traditional CRMs that just act as passive databases, VANTAGE leverages **autonomous AI agents** powered by **Google Gemini**, built on top of **Crustdata’s real-time professional data** to actively source deals, recruit talent, and generate warm sales introductions—all while maintaining strict human-in-the-loop approval processes.
 
 ---
+<img width="1428" height="847" alt="image" src="https://github.com/user-attachments/assets/4fce0147-009a-4443-83ee-ca7620d09bcc" />
 
 ## 🌟 The Core Philosophy
 
