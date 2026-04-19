@@ -1,0 +1,208 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Fund {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  name        String
+  thesis      String
+  stage       String[]
+  sectors     String[]
+  geography   String[]
+  permissions Json
+  fundTwins   FundTwin[]
+  companies   Company[]
+  people      Person[]
+  asks        Ask[]
+  raises      Raise[]
+  approvals   Approval[]
+  signals     SignalEvent[]
+  memory      ExecutionLog[]
+}
+
+model FundTwin {
+  id            String   @id @default(cuid())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  fundId        String
+  partnerIds    String[]
+  operatorIds   String[]
+  advisorIds    String[]
+  friendlyVCIds String[]
+  networkEdges  Json
+  fund          Fund     @relation(fields: [fundId], references: [id], onDelete: Cascade)
+}
+
+model Company {
+  id          String        @id @default(cuid())
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  fundId      String
+  name        String
+  domain      String
+  sector      String
+  stage       String
+  description String
+  geography   String
+  fund        Fund          @relation(fields: [fundId], references: [id], onDelete: Cascade)
+  twin        CompanyTwin?
+  asks        Ask[]
+  raises      Raise[]
+}
+
+model CompanyTwin {
+  id            String   @id @default(cuid())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  fundId        String
+  companyId     String   @unique
+  employeeCount Int
+  fundingData   Json
+  latestRound   Json
+  hiringSignals Json
+  webEvidence   Json
+  peerSet       Json
+  raiseState    String
+  refreshedAt   DateTime
+  company       Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+model Person {
+  id           String        @id @default(cuid())
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  fundId       String
+  name         String
+  linkedinUrl  String?
+  currentTitle String
+  companyId    String?
+  location     String
+  roleType     String
+  trustLevel   String
+  fund         Fund          @relation(fields: [fundId], references: [id], onDelete: Cascade)
+  founderTwin  FounderTwin?
+}
+
+model FounderTwin {
+  id                String   @id @default(cuid())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  fundId            String
+  personId          String   @unique
+  summary           String
+  webContext        Json
+  approvalOwnership String[]
+  refreshedAt       DateTime
+  person            Person   @relation(fields: [personId], references: [id], onDelete: Cascade)
+}
+
+model Ask {
+  id            String      @id @default(cuid())
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  fundId        String
+  text          String
+  companyId     String?
+  personId      String?
+  lane          String
+  urgency       String
+  desiredOutput String?
+  searchPlan    String?
+  narrative     String?
+  status        String
+  fund          Fund        @relation(fields: [fundId], references: [id], onDelete: Cascade)
+  company       Company?    @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  routes        RouteCandidate[]
+}
+
+model RouteCandidate {
+  id             String       @id @default(cuid())
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  fundId         String
+  askId          String
+  personId       String?
+  companyId      String?
+  warmth         String
+  compositeScore Float
+  rankPosition   Int
+  ask            Ask          @relation(fields: [askId], references: [id], onDelete: Cascade)
+  scores         RouteScore[]
+}
+
+model RouteScore {
+  id               String   @id @default(cuid())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  fundId           String
+  routeCandidateId String
+  dimension        String
+  score            Float
+  weight           Float
+  note             String?
+  routeCandidate   RouteCandidate @relation(fields: [routeCandidateId], references: [id], onDelete: Cascade)
+}
+
+model Approval {
+  id           String   @id @default(cuid())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  fundId       String
+  askId        String?
+  raiseId      String?
+  status       String
+  requestedBy  String
+  decidedBy    String?
+  decisionNote String?
+  decidedAt    DateTime?
+  fund         Fund     @relation(fields: [fundId], references: [id], onDelete: Cascade)
+}
+
+model Raise {
+  id             String   @id @default(cuid())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  fundId         String
+  companyId      String
+  personId       String?
+  status         String
+  raiseWindow    String?
+  convictionNote String
+  ownerId        String
+  fund           Fund     @relation(fields: [fundId], references: [id], onDelete: Cascade)
+  company        Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+model ExecutionLog {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  fundId     String
+  askId      String?
+  raiseId    String?
+  event      String
+  metadata   Json
+  source     String
+  fund       Fund     @relation(fields: [fundId], references: [id], onDelete: Cascade)
+}
+
+model SignalEvent {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  fundId      String
+  companyId   String?
+  personId    String?
+  type        String
+  description String
+  severity    String
+  readAt      DateTime?
+  fund        Fund     @relation(fields: [fundId], references: [id], onDelete: Cascade)
+}
